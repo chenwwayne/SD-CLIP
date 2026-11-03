@@ -8,16 +8,17 @@ public split builder and pipeline can be exercised end-to-end (smoke test).
 
 Generated layout (identical to the real dataset):
 
-    <output>/Active/images/normal/TDAOI_0001.png ...          (181)
-            /Active/images/anomaly/TDAOI_xxxx.png ...         (266)
-            /Active/mask/anomaly/TDAOI_xxxx.png ...           (266, same stems)
-            /Cell/images/normal/TDAOH_0001.png ...            (138)
-            /Cell/images/anomaly/TDAOH_xxxx.png ...           (32)
-            /Cell/mask/anomaly/TDAOH_xxxx.png ...             (32, same stems)
+    <output>/Active/images/normal/active_0001.png ...          (181)
+            /Active/images/anomaly/active_xxxx.png ...         (266)
+            /Active/mask/anomaly/active_xxxx.png ...           (266, same stems)
+            /Cell/images/normal/cell_0001.png ...              (138)
+            /Cell/images/anomaly/cell_xxxx.png ...             (32)
+            /Cell/mask/anomaly/cell_xxxx.png ...               (32, same stems)
 
-Filenames embed the class tag ``TDAOI`` (Active) / ``TDAOH`` (Cell); the split
-builder derives ``class_name`` from this tag.  Masks share the exact basename
-of their anomaly image so ``--data-root`` scanning finds them one-to-one.
+Filenames embed a neutral per-domain tag (``active`` / ``cell``); the split
+builder records it as the record-level ``class_name``.  Masks share the exact
+basename of their anomaly image so ``--data-root`` scanning finds them
+one-to-one.
 
 After generation, feed the output directory to the split builder:
 
@@ -41,7 +42,7 @@ DOMAIN_COUNTS = {
     "Active": (181, 266),
     "Cell": (138, 32),
 }
-CLASS_TAG = {"Active": "TDAOI", "Cell": "TDAOH"}
+CLASS_TAG = {"Active": "active", "Cell": "cell"}
 IMG_SIZE = 256
 
 

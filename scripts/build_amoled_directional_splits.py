@@ -2,7 +2,7 @@
 """Build reproducible, direction-independent AMOLED splits from raw images.
 
 The legacy metadata in this repository is incomplete for AMOLED.  This builder
-therefore scans the AD4CLIP image/mask directories directly and writes only
+therefore scans the raw image/mask directories directly and writes only
 job-local JSONL files.
 """
 
@@ -12,7 +12,6 @@ import argparse
 import hashlib
 import json
 import random
-import re
 from pathlib import Path
 
 
@@ -22,6 +21,10 @@ DATASET_COUNTS = {
 }
 SHOTS = (1, 2, 4, 8, 16, 32)
 DIRECTIONS = (("Active", "Cell"), ("Cell", "Active"))
+
+# Neutral public class names. The private imagery uses its own internal tags;
+# re-map them locally with --class-name-map if you rebuild inside your lab.
+DEFAULT_CLASS_NAMES = {"Active": "active", "Cell": "cell"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -39,8 +42,28 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seeds", default=",".join(map(str, range(5))))
     p.add_argument("--shots", default=",".join(map(str, SHOTS)))
     p.add_argument("--directions", default="active_to_cell,cell_to_active")
+    p.add_argument(
+        "--class-name-map",
+        default="",
+        help=(
+            "Optional internal-tag re-mapping, e.g. 'Active=<tag>,Cell=<tag>'. "
+            "When omitted, neutral names 'active'/'cell' are used."
+        ),
+    )
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args()
+
+
+def parse_class_name_map(text: str) -> dict[str, str]:
+    mapping = dict(DEFAULT_CLASS_NAMES)
+    for item in (x for x in text.split(",") if x.strip()):
+        domain, _, name = item.partition("=")
+        domain = domain.strip()
+        name = name.strip()
+        if domain not in mapping or not name:
+            raise ValueError(f"invalid class-name map entry: {item!r}")
+        mapping[domain] = name
+    return mapping
 
 
 def sha256(path: Path) -> str:
@@ -51,14 +74,7 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def class_name_for(dataset: str, image_path: Path) -> str:
-    match = re.search(r"(TDAO[HI])", image_path.name)
-    if match:
-        return match.group(1)
-    return "TDAOI" if dataset == "Active" else "TDAOH"
-
-
-def scan_domain(data_root: Path, dataset: str) -> list[dict]:
+def scan_domain(data_root: Path, dataset: str, class_names: dict[str, str]) -> list[dict]:
     root = data_root / dataset
     image_root = root / "images"
     mask_root = root / "mask"
@@ -81,7 +97,7 @@ def scan_domain(data_root: Path, dataset: str) -> list[dict]:
             {
                 "image_path": relative,
                 "mask_path": mask_path,
-                "class_name": class_name_for(dataset, image),
+                "class_name": class_names[dataset],
                 "label": label,
             }
         )
@@ -129,7 +145,8 @@ def direction_pairs(names: str):
 def build(args: argparse.Namespace) -> dict:
     seeds = [int(x) for x in args.seeds.split(",") if x.strip()]
     shots = [int(x) for x in args.shots.split(",") if x.strip()]
-    domains = {name: scan_domain(args.data_root, name) for name in ("Active", "Cell")}
+    class_names = parse_class_name_map(args.class_name_map)
+    domains = {name: scan_domain(args.data_root, name, class_names) for name in ("Active", "Cell")}
     output_root = args.output_root
     output_root.mkdir(parents=True, exist_ok=True)
     summary = {"seeds": seeds, "shots": shots, "directions": [], "splits": []}

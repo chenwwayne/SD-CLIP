@@ -28,12 +28,14 @@ Both domains (`Active`, `Cell`) follow the same flat layout:
 
 ### File naming
 
-- Normal images: `<TAG>_<id>.png`, e.g. `TDAOI_0001.png`.
-- Anomaly images: `<TAG>_<id>.png`.
+- Normal images: `<tag>_<id>.png`, e.g. `active_0001.png`.
+- Anomaly images: `<tag>_<id>.png`.
 - Masks: exactly the same basename as their anomaly image (`.png`).
-- `TAG` is `TDAOI` for `Active` and `TDAOH` for `Cell`. The split builder
-  derives the record-level `class_name` from this tag via
-  `scripts/build_amoled_directional_splits.py::class_name_for`.
+- The `tag` is a neutral per-domain label (`active` for `Active`, `cell` for
+  `Cell`). The split builder records it as the record-level `class_name`
+  (`--class-name-map` lets you substitute a lab-internal tag keyword when you
+  rebuild on the private imagery — internal keywords themselves are never
+  shipped in this repository).
 
 Masks are binary: white defect pixels, black background.
 
@@ -43,9 +45,9 @@ Every split file is a JSON Lines file. Each line is one image record:
 
 ```json
 {
-  "image_path": "images/anomaly/TDAOI_0123.png",
-  "mask_path": "mask/anomaly/TDAOI_0123.png",
-  "class_name": "TDAOI",
+  "image_path": "images/anomaly/active_0123.png",
+  "mask_path": "mask/anomaly/active_0123.png",
+  "class_name": "active",
   "label": 1
 }
 ```
@@ -54,7 +56,7 @@ Every split file is a JSON Lines file. Each line is one image record:
 |--------------|--------|----------------------------------------------------------|
 | `image_path` | string | path relative to the domain root (`<amoled_root>/<domain>`) |
 | `mask_path`  | string | empty (`""`) for normal images; relative mask path for anomalies |
-| `class_name` | string | `"TDAOI"` (Active) or `"TDAOH"` (Cell)                   |
+| `class_name` | string | `"active"` (Active) or `"cell"` (Cell); lab-internal tags may substitute via `--class-name-map` |
 | `label`      | int    | `0` = normal, `1` = anomalous                             |
 
 Training jobs consume `source_support.jsonl`; test jobs consume
@@ -106,6 +108,6 @@ python scripts/build_amoled_directional_splits.py \
     --data-root dummy_data/amoled_array --output-root splits/amoled_dummy
 ```
 
-The dummy generator writes the same `TDAOI`/`TDAOH` naming, the same
+The dummy generator writes the same `active`/`cell` naming, the same
 `images/`, `mask/` split, and the same counts, so every stage of the pipeline
 can be validated on a machine that never sees the private imagery.

@@ -116,7 +116,7 @@ The AMOLED-ARRAY imagery is proprietary and **not distributed**. Its
 organizational format is open:
 
 - **Format spec**: [docs/amoled_data_organization.md](docs/amoled_data_organization.md)
-  (directory layout, `TDAOI`/`TDAOH` naming, JSONL schema, split protocol).
+  (directory layout, per-domain `class_name` tags, JSONL schema, split protocol).
 - **Dummy generator**: create synthetic placeholder images/masks in the same
   format and run the full split pipeline end-to-end:
 
