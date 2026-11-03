@@ -2,7 +2,9 @@
 
 <h1>🛰️ SD-CLIP</h1>
 
-**SD** = **Semiconductor Display** (e.g., AMOLED display panels). SD-CLIP: Periodicity-Aware Semantic–Visual Adaptation for Cross-Domain Few-Shot Anomaly Detection
+**SD** = **Semiconductor Display** (e.g., AMOLED display panels).
+
+**SD-CLIP**: Periodicity-Aware Semantic–Visual Adaptation for **Cross-Process Few-Shot Defect Inspection** in Semiconductor Display Manufacturing
 
 Cross-domain few-shot anomaly detection for **periodic visual patterns** — e.g. AMOLED display panels and periodic-texture industrial surfaces.
 
