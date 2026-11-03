@@ -65,17 +65,20 @@ The paper studies *when CLIP-style text–image alignment helps periodic anomaly
 
 Component ablation and comparison against reference methods on MVTec-Periodic (image & pixel AUROC):
 
-<p align="center">
-  <img src="docs/figures/figure_ablation.png" alt="Component ablation curves" width="65%"/>
-  <br/>
-  <em>Fig. 2 — Component ablation: each block of SD-CLIP contributes consistently across few-shot settings.</em>
-</p>
-
-<p align="center">
-  <img src="docs/figures/figure_sota_comparison.png" alt="Few-shot SOTA comparison" width="65%"/>
-  <br/>
-  <em>Fig. 3 — Few-shot comparison against reference methods under the same protocol.</em>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="docs/figures/figure_ablation.png" alt="Component ablation curves" width="85%"/>
+      <br/>
+      <em>Fig. 2 — Component ablation: each block of SD-CLIP contributes consistently across few-shot settings.</em>
+    </td>
+    <td align="center">
+      <img src="docs/figures/figure_sota_comparison.png" alt="Few-shot SOTA comparison" width="85%"/>
+      <br/>
+      <em>Fig. 3 — Few-shot comparison against reference methods under the same protocol.</em>
+    </td>
+  </tr>
+</table>
 
 ---
 
