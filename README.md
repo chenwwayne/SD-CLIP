@@ -26,7 +26,7 @@ This repository is the public companion code of the SD-CLIP paper ***(under revi
 - 🚀 **Full pipeline** — two-stage training (text adaptation → visual adaptation), evaluation, and per-sample **visualizations** in one codebase.
 - 🔓 **Open MVTec-Periodic recipe** — rebuild the two periodic-texture subsets (`carpet`, `grid`) from the public [MVTec-AD](https://www.mvtec.com/company/research/datasets/mvtec-ad) dataset with a single script.
 - 📐 **AMOLED format, open** — the *organizational format* (without the private images) of the proprietary AMOLED dataset used in the paper, plus a **synthetic dummy generator** so every stage runs end-to-end on any machine.
-- 📊 **Deterministic few-shot protocol** — seeds `0,1,9`, shots `1→32`, strictly nested support, full-target test, checkpoint fixed at epoch 5.
+- 📊 **Deterministic few-shot protocol** — evaluated over multiple seeds, shots `1→32`, strictly nested support, full-target test, checkpoint fixed at epoch 5.
 
 ---
 
@@ -167,7 +167,7 @@ On a machine with access to the private data, pass the real root to the same bui
 
 ## 🔁 Reproduce the MVTec-Periodic ablation
 
-The runner prepares deterministic splits on the fly (seeds `0,1,9`, shots `1,2,4,8,16,32`, both directions), shares checkpoints between methods according to the method matrix, learns λ where required, and evaluates on the full target domain:
+The runner prepares deterministic splits on the fly (multiple seeds, shots `1,2,4,8,16,32`, both directions), shares checkpoints between methods according to the method matrix, learns λ where required, and evaluates on the full target domain:
 
 ```bash
 python tools/run_mvtec_periodic_ablation.py --dry-run       # show the plan
@@ -188,19 +188,19 @@ Common flags: `--seeds`, `--shots`, `--gpus`, `--epoch 5` (checkpoints are fixed
 python train.py \
   --dataset MVTec-Periodic-carpet \
   --metadata-path splits/.../source_support.jsonl \
-  --prompt_mode mvfa --shot 8 --seed 0 \
+  --prompt_mode mvfa --shot 8 --seed <SEED> \
   --text_adapt_weight 0.1 --image_adapt_weight 0.1 \
   --image_adapter_type kan_residual --image_proj_type simple \
   --kan_bottleneck 16 --kan_adapter_bottleneck 16 --kan_proj_bottleneck 16 \
   --kan_grid_size 2 --kan_spline_order 2 \
-  --save_path ckpt/carpet_to_grid_s8_s0
+  --save_path ckpt/carpet_to_grid_s8_s<SEED>
 
 # ---- Learn the APSF fusion weight λ from the same support -----------------
 python tools/learn_apsf_weight.py \
-  --source MVTec-Periodic-carpet --shot 8 --seed 0 \
-  --checkpoint-dir ckpt/carpet_to_grid_s8_s0 \
+  --source MVTec-Periodic-carpet --shot 8 --seed <SEED> \
+  --checkpoint-dir ckpt/carpet_to_grid_s8_s<SEED> \
   --metadata-path splits/.../source_support.jsonl \
-  --output-dir ckpt/carpet_to_grid_s8_s0/lambda \
+  --output-dir ckpt/carpet_to_grid_s8_s<SEED>/lambda \
   --epochs 5 --batch-size 64
 
 # ---- Test on the full target domain with visualizations -------------------
@@ -209,9 +209,9 @@ python test.py \
   --metadata-path splits/.../target_test.jsonl \
   --prompt_mode apsf --apsf_weight 0.5 \
   --checkpoint_epoch 5 \
-  --save_path ckpt/carpet_to_grid_s8_s0 \
-  --metrics_json_path results/carpet_to_grid_s8_s0.json \
-  --visualize --visualize_dir results/vis/carpet_to_grid_s8_s0
+  --save_path ckpt/carpet_to_grid_s8_s<SEED> \
+  --metrics_json_path results/carpet_to_grid_s8_s<SEED>.json \
+  --visualize --visualize_dir results/vis/carpet_to_grid_s8_s<SEED>
 ```
 
 Every target-test run should pass `--visualize` with a dedicated `--visualize_dir`; normal samples are visualized too. Visualizations show the input image, the GT mask, and the predicted anomaly heatmap per sample.
