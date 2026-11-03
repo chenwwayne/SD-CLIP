@@ -1,0 +1,13 @@
+torch==2.3.1
+torchvision==0.18.1
+pykan==0.2.8
+einops==0.7.0
+ftfy==6.2.0
+kornia==0.6.9
+opencv-python==4.9.0.80
+timm==0.6.12
+tiktoken==0.7.0
+regex==2024.5.15
+scikit-learn
+pandas
+tqdm

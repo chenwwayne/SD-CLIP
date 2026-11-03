@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Checkpoints / serialized artifacts
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+
+# Experiment outputs
+data/
+dummy_data/
+datasets/
+ckpt/
+checkpoints/
+pretrain/
+weights/
+queue/
+logs/
+results/
+splits/
+runs/
+wandb/
+visualization/
+visualizations/
+prediction/
+predictions/
+tensorboard/
+mlruns/
+
+# Runtime scratch
+*.pid
+*.tmp
+*.temp
+*.lock
+*.bak
+*.orig
+*.rej
+*.npy
+*.npz
